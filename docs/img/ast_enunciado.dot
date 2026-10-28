@@ -1,0 +1,29 @@
+digraph "ast" {
+  graph [ordering=out, nodesep=0.25, ranksep=0.45];
+  node [fontname="Helvetica", fontsize=11];
+  n0 [label="Programa", shape=ellipse, style=filled, fillcolor="#fdf3d8"];
+  n1 [label="Regla (línea 1)", shape=ellipse, style=filled, fillcolor="#fdf3d8"];
+  n2 [label="Condición", shape=ellipse, style=filled, fillcolor="#fdf3d8"];
+  n3 [label="AND", shape=ellipse, style=filled, fillcolor="#fdf3d8"];
+  n4 [label=">", shape=ellipse, style=filled, fillcolor="#fdf3d8"];
+  n5 [label="temperatura  [ID]", shape=box, style="rounded,filled", fillcolor="#e8f1fb"];
+  n4 -> n5;
+  n6 [label="28  [NUM]", shape=box, style="rounded,filled", fillcolor="#e8f1fb"];
+  n4 -> n6;
+  n3 -> n4;
+  n7 [label="<", shape=ellipse, style=filled, fillcolor="#fdf3d8"];
+  n8 [label="humedad  [ID]", shape=box, style="rounded,filled", fillcolor="#e8f1fb"];
+  n7 -> n8;
+  n9 [label="40  [NUM]", shape=box, style="rounded,filled", fillcolor="#e8f1fb"];
+  n7 -> n9;
+  n3 -> n7;
+  n2 -> n3;
+  n1 -> n2;
+  n10 [label="Acciones", shape=ellipse, style=filled, fillcolor="#fdf3d8"];
+  n11 [label="Acción: encender", shape=ellipse, style=filled, fillcolor="#fdf3d8"];
+  n12 [label="objeto: ventilador", shape=box, style="rounded,filled", fillcolor="#e8f1fb"];
+  n11 -> n12;
+  n10 -> n11;
+  n1 -> n10;
+  n0 -> n1;
+}
