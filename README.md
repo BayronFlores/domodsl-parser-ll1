@@ -1,17 +1,17 @@
 # DomoDSL — Analizador sintáctico para automatización de una casa inteligente
 
-Proyecto de **Teoría de la Computación (INFO1148)** — *Diseño e implementación de un analizador sintáctico*.
+Proyecto de **Teoría de la Computación (INFO1148)** — _Diseño e implementación de un analizador sintáctico_.
 
 DomoDSL es un pequeño lenguaje de dominio específico (DSL) para escribir **reglas de automatización IoT**
 ("cuando ocurra esta condición, ejecuta estas acciones"). Este repositorio contiene:
 
-* un **analizador léxico** (ampliado a partir del entregado por el docente),
-* la **gramática libre de contexto** del lenguaje, con cálculo de **FIRST**, **FOLLOW** y **tabla LL(1)**,
-* **dos analizadores sintácticos predictivos escritos a mano** (sin generadores de parsers):
+- un **analizador léxico** (ampliado a partir del entregado por el docente),
+- la **gramática libre de contexto** del lenguaje, con cálculo de **FIRST**, **FOLLOW** y **tabla LL(1)**,
+- **dos analizadores sintácticos predictivos escritos a mano** (sin generadores de parsers):
   descenso recursivo (construye el **AST**) y dirigido por la **tabla LL(1)** (construye el árbol de derivación),
-* manejo de **errores léxicos y sintácticos** con línea, columna y posición,
-* **46 casos de prueba** + 18 pruebas unitarias,
-* el informe del proyecto (`informe/Informe_DomoDSL.pdf`).
+- manejo de **errores léxicos y sintácticos** con línea, columna y posición,
+- **46 casos de prueba** + 18 pruebas unitarias,
+- el informe del proyecto (se entrega aparte en PDF; sus capturas están en `docs/img/`).
 
 ```
 WHEN temperatura > 28 AND humedad < 40 THEN encender ventilador;
@@ -21,35 +21,31 @@ WHEN NOT (puerta == TRUE) AND (hora >= 22 OR hora < 6) THEN bloquear puerta_prin
 
 ## Requisitos
 
-* **Python 3.9 o superior** (probado con 3.12).
-* **No requiere bibliotecas externas.**
-* *Opcional:* [Graphviz](https://graphviz.org/download/) para convertir los archivos `.dot` exportados en imágenes.
+- **Python 3.9 o superior** (probado con 3.12).
+- **No requiere bibliotecas externas.**
+- _Opcional:_ [Graphviz](https://graphviz.org/download/) para convertir los archivos `.dot` exportados en imágenes.
 
 ## Estructura del repositorio
 
-| Archivo | Contenido |
-|---|---|
-| `lexer.py` | Analizador léxico: tokens con posición, palabras reservadas, token de fin `$`. |
-| `gramatica.py` | La GLC (24 producciones), cálculo de FIRST/FOLLOW, tabla LL(1) y detección de conflictos. |
-| `parser_rd.py` | Parser por **descenso recursivo** → construye el **AST**. Un método por no terminal. |
-| `parser_ll1.py` | Parser **dirigido por tabla LL(1)** con pila → construye el árbol de derivación y una traza. |
-| `arbol.py` | Clases del AST, árbol genérico, impresión jerárquica y exportación a Graphviz (`.dot`). |
-| `errores.py` | Excepciones `ErrorLexico` y `ErrorSintactico` (línea, columna, posición, puntero `^`). |
-| `main.py` | Interfaz de línea de comandos. |
-| `casos_prueba.py` | Tabla de 46 casos (12 válidos, 20 inválidos, 14 límite). |
-| `ejecutar_pruebas.py` | Ejecuta los casos con **ambos** parsers y muestra el resultado. |
-| `test_parser.py` | Pruebas unitarias (`unittest`): léxico, FIRST/FOLLOW, tabla, AST, errores. |
-| `ejemplos/` | Programas `.dsl` de ejemplo (válidos e inválidos). |
-| `CONTRATOS.md` | Contratos de interfaz K1–K8, propiedad de archivos y registro de cambios a la gramática. |
-| `docs/decisiones.md` | Dominio, propósito y decisiones de diseño (T01). |
-| `docs/gramatica_v1.md` | Gramática congelada, numerada (T03). |
-| `docs/analisis_gramatica.md` | Recursión izquierda, factorización y ambigüedad (B1). |
-| `docs/first_follow.md` | FIRST y FOLLOW justificados (B2). |
-| `docs/tabla_ll1.md` | Tabla LL(1) y conjuntos de selección (B3, B4). |
-| `docs/generar_docs.py` | Regenera los documentos anteriores desde `gramatica.py`. |
-| `docs/Planilla_Reparto_Proyecto_3_Personas.xlsx` | Planilla de reparto de tareas para 3 personas. |
-| `docs/img/` | Árboles (`.dot` y `.png`) y capturas de la ejecución. |
-| `informe/` | Informe en PDF y su fuente LaTeX, dividida en un archivo por autor (`sec_*.tex`) y ensamblada en `Informe_DomoDSL.tex`. `generar_informe.py` regenera las tablas desde el código. |
+| Archivo                        | Contenido                                                                                    |
+| ------------------------------ | -------------------------------------------------------------------------------------------- |
+| `lexer.py`                     | Analizador léxico: tokens con posición, palabras reservadas, token de fin `$`.               |
+| `gramatica.py`                 | La GLC (24 producciones), cálculo de FIRST/FOLLOW, tabla LL(1) y detección de conflictos.    |
+| `parser_rd.py`                 | Parser por **descenso recursivo** → construye el **AST**. Un método por no terminal.         |
+| `parser_ll1.py`                | Parser **dirigido por tabla LL(1)** con pila → construye el árbol de derivación y una traza. |
+| `arbol.py`                     | Clases del AST, árbol genérico, impresión jerárquica y exportación a Graphviz (`.dot`).      |
+| `errores.py`                   | Excepciones `ErrorLexico` y `ErrorSintactico` (línea, columna, posición, puntero `^`).       |
+| `main.py`                      | Interfaz de línea de comandos.                                                               |
+| `casos_prueba.py`              | Tabla de 46 casos (12 válidos, 20 inválidos, 14 límite).                                     |
+| `ejecutar_pruebas.py`          | Ejecuta los casos con **ambos** parsers y muestra el resultado.                              |
+| `test_parser.py`               | Pruebas unitarias (`unittest`): léxico, FIRST/FOLLOW, tabla, AST, errores.                   |
+| `ejemplos/`                    | Programas `.dsl` de ejemplo (válidos e inválidos).                                           |
+| `docs/gramatica_v1.md`         | Gramática congelada, numerada (T03).                                                         |
+| `docs/analisis_gramatica.md`   | Recursión izquierda, factorización y ambigüedad (B1).                                        |
+| `docs/first_follow.md`         | FIRST y FOLLOW justificados (B2).                                                            |
+| `docs/tabla_ll1.md`            | Tabla LL(1) y conjuntos de selección (B3, B4).                                               |
+| `docs/resultados_pruebas.json` | Resultados de `ejecutar_pruebas.py` (se regenera al ejecutarlo).                             |
+| `docs/img/`                    | Árboles (`.dot` y `.png`) y capturas de la ejecución.                                        |
 
 ## Cómo ejecutar
 
@@ -106,13 +102,13 @@ Precedencia (de mayor a menor): `NOT`, `AND`, `OR`; ambos conectores asocian a l
 
 ### Tokens
 
-| Token | Ejemplos |
-|---|---|
+| Token               | Ejemplos                                      |
+| ------------------- | --------------------------------------------- |
 | Palabras reservadas | `WHEN` `THEN` `AND` `OR` `NOT` `TRUE` `FALSE` |
-| `ID` | `temperatura`, `sensor_1`, `luz_pasillo` |
-| `NUM` | `28`, `0.5` |
-| `OP_REL` | `>` `<` `>=` `<=` `==` `!=` |
-| Separadores | `;` `,` `(` `)` |
+| `ID`                | `temperatura`, `sensor_1`, `luz_pasillo`      |
+| `NUM`               | `28`, `0.5`                                   |
+| `OP_REL`            | `>` `<` `>=` `<=` `==` `!=`                   |
+| Separadores         | `;` `,` `(` `)`                               |
 
 ## Gramática (resumen)
 
@@ -175,11 +171,11 @@ Error léxico (línea 1, columna 18, posición 17): símbolo no reconocido '='. 
 
 ## Decisiones de diseño
 
-* **Sin generadores de parsers**: FIRST, FOLLOW, tabla y ambos analizadores están implementados desde cero
+- **Sin generadores de parsers**: FIRST, FOLLOW, tabla y ambos analizadores están implementados desde cero
   (solo se usa la biblioteca estándar de Python).
-* **Coherencia gramática ↔ código**: cada método de `parser_rd.py` indica en un comentario la producción que implementa
+- **Coherencia gramática ↔ código**: cada método de `parser_rd.py` indica en un comentario la producción que implementa
   y la tabla de `parser_ll1.py` se construye a partir de la **misma** lista `PRODUCCIONES` de `gramatica.py`.
   Las pruebas verifican que ambos analizadores aceptan/rechazan exactamente las mismas entradas.
-* **Errores**: el analizador se detiene en el primer error y lo informa con posición; los mensajes dependen del contexto
+- **Errores**: el analizador se detiene en el primer error y lo informa con posición; los mensajes dependen del contexto
   (por ejemplo, distinguen "falta `)`" de "`)` sobrante").
-* **Limitación conocida**: no hay recuperación de errores (no se informan varios errores en una misma ejecución).
+- **Limitación conocida**: no hay recuperación de errores (no se informan varios errores en una misma ejecución).
