@@ -1,0 +1,91 @@
+% Sección 2 (tarea C1) - autor: Persona C. Editar solo este archivo.
+\section{Especificación del lenguaje}
+
+\subsection{Propósito}
+DomoDSL permite escribir programas formados por una o más \textbf{reglas de automatización}. Cada regla evalúa una
+\textbf{condición} sobre variables del hogar (temperatura, humedad, movimiento, hora, \dots) y, si se cumple, ordena
+una o más \textbf{acciones} sobre dispositivos (ventilador, alarma, termostato, \dots). El lenguaje no ejecuta las
+reglas: el objetivo del proyecto es \emph{reconocerlas} (decidir si son sintácticamente válidas), informar errores
+útiles y producir una representación estructurada (AST).
+
+\subsection{Alfabeto}
+El alfabeto relevante $\Sigma$ está formado por:
+\begin{itemize}[nosep]
+\item letras \texttt{A--Z} y \texttt{a--z}, dígitos \texttt{0--9}, el guion bajo \texttt{\_} y el punto \texttt{.} (solo dentro de números decimales);
+\item los símbolos \texttt{>}, \texttt{<}, \texttt{=}, \texttt{!}, \texttt{;}, \texttt{,}, \texttt{(} y \texttt{)};
+\item espacio, tabulación y salto de línea (separadores que el lexer descarta).
+\end{itemize}
+Cualquier otro carácter produce un \emph{error léxico}.
+
+\subsection{Categorías de tokens}
+El analizador léxico (basado en el entregado por el docente) usa expresiones regulares. Los espacios se descartan.
+Las palabras reservadas \textbf{no distinguen mayúsculas de minúsculas} (como en la función base).
+
+\begin{center}\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}p{4.3cm} >{\raggedright\arraybackslash}p{3.3cm}@{}}
+\toprule
+\textbf{Token} & \textbf{Patrón} & \textbf{Descripción} & \textbf{Ejemplos} \\
+\midrule
+\texttt{WHEN, THEN} & \texttt{WHEN | THEN} & Inicio y separador de la regla & \texttt{WHEN, then} \\
+\texttt{AND, OR, NOT} & \texttt{AND | OR | NOT} & Operadores lógicos & \texttt{AND, not} \\
+\texttt{TRUE, FALSE} & \texttt{TRUE | FALSE} & Valores booleanos & \texttt{TRUE} \\
+\texttt{ID} & \texttt{[A-Za-z\_][A-Za-z0-9\_]*} & Identificadores (variables, verbos y dispositivos) & \texttt{temperatura, sensor\_1} \\
+\texttt{NUM} & \texttt{\textbackslash{}d+(\textbackslash{}.\textbackslash{}d+)?} & Números enteros o decimales & \texttt{28, 0.5} \\
+\texttt{OP\_REL} & \texttt{>= | <= | == | != | > | <} & Operadores relacionales & \texttt{>=, ==} \\
+\texttt{PUNTO\_COMA} & \texttt{;} & Fin de regla & \texttt{;} \\
+\texttt{COMA} & \texttt{,} & Separador de acciones & \texttt{,} \\
+\texttt{PARENT\_IZQ} & \texttt{(} & Abre agrupación & \texttt{(} \\
+\texttt{PARENT\_DER} & \texttt{)} & Cierra agrupación & \texttt{)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Un identificador cuyo texto coincide con una palabra reservada se convierte en el token reservado
+(p.\,ej. \texttt{when} $\to$ \texttt{WHEN}), por lo que las palabras reservadas no pueden usarse como identificadores.
+Al final de la entrada el lexer agrega el token \texttt{\$} (fin de entrada), que necesita el analizador LL(1).
+
+\subsection{Cumplimiento de los requisitos mínimos del enunciado}
+\begin{center}\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{5.6cm} >{\raggedright\arraybackslash}p{9.4cm}@{}}
+\toprule
+\textbf{Requisito} & \textbf{Cómo lo cumple DomoDSL} \\
+\midrule
+Al menos 4 palabras reservadas & 7: \texttt{WHEN}, \texttt{THEN}, \texttt{AND}, \texttt{OR}, \texttt{NOT}, \texttt{TRUE}, \texttt{FALSE} \\
+Identificadores & Token \texttt{ID} \\
+Valores numéricos y/o booleanos & \texttt{NUM} (enteros y decimales) y \texttt{TRUE}/\texttt{FALSE} \\
+Al menos 3 operadores & 9: seis relacionales (\texttt{> < >= <= == !=}) y tres lógicos (\texttt{AND OR NOT}) \\
+Estructura de sentencia principal & \texttt{WHEN <condición> THEN <acciones> ;} \\
+Más de una sentencia & Un programa es una secuencia de una o más reglas \\
+Construcción compuesta & Conectores \texttt{AND}/\texttt{OR}, paréntesis y listas de acciones con parámetros \\
+Extensión creativa & \texttt{NOT}, paréntesis, múltiples acciones y acciones con parámetros (sección~4.6) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Ejemplos de sentencias válidas e inválidas}
+\paragraph{Válidas.}
+\begin{enumerate}[nosep]
+\item \texttt{WHEN temperatura > 28 THEN encender ventilador;}
+\item \texttt{WHEN movimiento == TRUE THEN activar alarma;}
+\item \texttt{WHEN temperatura > 28 AND humedad < 40 THEN encender ventilador;}
+\item \texttt{WHEN luz < 100 OR hora >= 20 THEN encender lampara;}
+\item \texttt{WHEN NOT puerta == TRUE THEN activar alarma;}
+\item \texttt{WHEN (temperatura > 30 OR humedad > 80) AND presencia == TRUE THEN encender aire;}
+\item \texttt{WHEN temperatura > 28 THEN encender ventilador 3, activar alarma;}
+\end{enumerate}
+\paragraph{Inválidas.}
+\begin{center}\small
+\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{7.2cm} >{\raggedright\arraybackslash}p{6.3cm}@{}}
+\toprule
+\textbf{N.º} & \textbf{Sentencia} & \textbf{Motivo} \\
+\midrule
+1 & \texttt{WHEN temperatura > 28 encender ventilador;} & Falta la palabra reservada \texttt{THEN} \\
+2 & \texttt{WHEN temperatura > THEN encender ventilador;} & Falta el valor después de \texttt{>} \\
+3 & \texttt{temperatura > 28 THEN encender ventilador;} & La regla no comienza con \texttt{WHEN} \\
+4 & \texttt{WHEN temperatura > 28 THEN encender ventilador} & Falta el \texttt{;} final \\
+5 & \texttt{WHEN (temperatura > 28 THEN encender ventilador;} & Paréntesis sin cerrar \\
+6 & \texttt{WHEN temperatura = 28 THEN encender ventilador;} & \texttt{=} no es un operador (debe ser \texttt{==}): error léxico \\
+\bottomrule
+\end{tabular}
+\end{center}
+
